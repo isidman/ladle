@@ -12,5 +12,5 @@
        - Not possible to add it to the site. It seems it the platform I'm using doesn't allow web apps at the moment. So even I've set it up as a page, it would not be possible. In search of alternatives. Keeping the API posibility just for education purposes & possible remake as a web app hosted on localhost.
 
 
-!*Update @ 03/09/2025 18:32*
+! *Update @ 03/09/2025 18:32*
        - Possible solution to the API via the cheatsheet repo I starred today. Need to check.
