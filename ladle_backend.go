@@ -1,11 +1,11 @@
 package main
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"log"
 	"math"
+	"math/rand"
 	"net/http"
 	"strconv"
 )
@@ -406,7 +406,6 @@ func rgbToHex(r, g, b int) string {
 
 // Palette genaration Functions
 func generatePalette(baseColor Color, paletteType string, count int) []Color {
-	colors := make([]Color, count)
 
 	switch paletteType {
 	case "complementary":
@@ -421,7 +420,6 @@ func generatePalette(baseColor Color, paletteType string, count int) []Color {
 		return generateAnalogousPalette(baseColor, count)
 	}
 
-	return colors
 }
 
 // Complementary palette function

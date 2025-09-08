@@ -1,16 +1,37 @@
-### TODO List for "Ladle" project
-    - Write down initial thoughts. 
-    - Create a backend for the web app in Go.
-        -a. **!** Figure out how to convert colors and have the ability to convert them from the color     spectrum to each type (hex,rgb,hsl,hsv) available to the end user.
-        -b. *READ THE ABOVE AGAIN.*
-     - Start reading and working with JS again to build the actual web app.
-     - Update people that might care on the existence of the web app and where they can find it.
+# TODO List for "Ladle" project
+
+### 1. Back-end building:
+ - Create structs for all color formats showing in ladle.
+
+ - ColorRequest struct must be made to represent the colors requested from the web app client (end user).
+
+ - PaletteRequest struct must be made to represent the type of palette the end user would like to create based on the color they chose from the spectrum.
+
+ - Conversion control for color formats.
+
+ - Opening the web app makes a random color generation.
+ 
+ - Create the color conversion algorithm for each type.
+
+ 
+ - Specific color conversion & Palette generation functions should be added at the end of the backend file for easier reference.
 
 
-! *All updates from now on only on commits @ 05/09/2025 13:23*
+### 2. JS Application: 
+  - Create pre-initialization state and get the element ids from backend.
 
-! *Update @ 03/09/2025 18:32*
-       - Possible solution to the API via the cheatsheet repo I starred today. Need to check.
+  - Initialization state with color conversion utility setup.
 
-! *Update @ 02/09/2025 15:25*
-       - Not possible to add it to the site. It seems it the platform I'm using doesn't allow web apps at the moment. So even I've set it up as a page, it would not be possible. In search of alternatives. Keeping the API posibility just for education purposes & possible remake as a web app hosted on localhost.
+  - Setup canvas drawing and & clear.
+
+  - Draw in the colorwheel.
+
+  - Setup event handling, inputs, sliders and buttons.
+
+  - Handle updates in brightness slider and  input fields. *Check documentation on how to do this without triggering events.*
+
+  - Storage management
+
+  - Clipboard functionality and fallback handling for browsers that can't support it.
+
+ - Check DOM loading and run diagnostics.
