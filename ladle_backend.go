@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/rand"
-	"encoding/base32"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -49,6 +48,7 @@ type ColorRequest struct {
 type PaletteRequest struct {
 	BaseColor Color  `json:"baseColor"`
 	Type      string `json:"type"` // "Complementary", "Analogous", "Triadic", "Monochrome"
+	Count     int    `json:"count"`
 }
 
 func main() {
@@ -132,7 +132,7 @@ func generatePaletteHandler(w http.ResponseWriter, r *http.Request) {
 
 	palette := generatePalette(req.BaseColor, req.Type, req.Count)
 
-	w.Header.Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string][]Color{
 		"palette": palette,
 	})
@@ -167,7 +167,7 @@ func randomColorHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(color)
 }
 
-//Color conversion functions & parsing
+// Color conversion functions & parsing
 func parseHexColor(hex string) (Color, error) {
 	if len(hex) == 7 && hex[0] == '#' {
 		hex = hex[1:]
@@ -191,7 +191,7 @@ func parseHexColor(hex string) (Color, error) {
 		RGB: rgb,
 		HSL: rgbToHsl(int(r), int(g), int(b)),
 		HSV: rgbToHsv(int(r), int(g), int(b)),
-	},nil
+	}, nil
 }
 
 func parseRGBColor(value interface{}) (Color, error) {
@@ -200,16 +200,16 @@ func parseRGBColor(value interface{}) (Color, error) {
 		return Color{}, fmt.Errorf("invalid RGB format")
 	}
 
-	r :=int(rgb["r"].(float64))
-	g :=int(rgb["g"].(float64))
-	b :=int(rgb["b"].(float64))
+	r := int(rgb["r"].(float64))
+	g := int(rgb["g"].(float64))
+	b := int(rgb["b"].(float64))
 
 	return Color{
 		RGB: ColorRGB{R: r, G: g, B: b},
 		Hex: rgbToHex(r, g, b),
 		HSL: rgbToHsl(r, g, b),
 		HSV: rgbToHsv(r, g, b),
-	},nil
+	}, nil
 }
 
 func parseHSLColor(value interface{}) (Color, error) {
@@ -260,7 +260,7 @@ func hsvToRgb(h, s, v int) ColorRGB {
 	vf := float64(v) / 100.0
 
 	c := vf * sf
-	x := c * (1- math.Abs(math.Mod(hf*6, 2) - 1))
+	x := c * (1 - math.Abs(math.Mod(hf*6, 2)-1))
 	m := vf - c
 
 	var r, g, b float64
@@ -272,7 +272,7 @@ func hsvToRgb(h, s, v int) ColorRGB {
 		r, g, b = x, c, 0
 	case 2:
 		r, g, b = 0, c, x
-	case 3: 
+	case 3:
 		r, g, b = 0, x, c
 	case 4:
 		r, g, b = x, 0, c
@@ -331,8 +331,8 @@ func hslToRgb(h, s, l int) ColorRGB {
 	sf := float64(s) / 100.0
 	lf := float64(l) / 100.0
 
-	c := (1 - math.Abs(2*lf - 1)) * sf
-	x := c * (1 - math.Abs(math.Mod(hf*6, 2) - 1))
+	c := (1 - math.Abs(2*lf-1)) * sf
+	x := c * (1 - math.Abs(math.Mod(hf*6, 2)-1))
 	m := lf - c/2
 
 	var r, g, b float64
@@ -372,7 +372,7 @@ func rgbToHsl(r, g, b int) ColorHSL {
 
 	//Light calculation
 	l = (max + min) / 2
-	
+
 	//Saturation calculation
 	if delta == 0 {
 		s = 0
@@ -404,8 +404,8 @@ func rgbToHex(r, g, b int) string {
 	return fmt.Sprintf("#%02x%02x%02x", r, g, b)
 }
 
-//Palette genaration Functions
-func generatePalette(baseColor Color, paletteType string, count int)[]Color {
+// Palette genaration Functions
+func generatePalette(baseColor Color, paletteType string, count int) []Color {
 	colors := make([]Color, count)
 
 	switch paletteType {
@@ -415,16 +415,18 @@ func generatePalette(baseColor Color, paletteType string, count int)[]Color {
 		return generateAnalogousPalette(baseColor, count)
 	case "triadic":
 		return generateTriadicPalette(baseColor, count)
+	case "monochromatic":
+		return generateMonochromaticPalette(baseColor, count)
 	default:
-		return generateAnalogousPalette(baseColor, count)	
+		return generateAnalogousPalette(baseColor, count)
 	}
 
 	return colors
 }
 
-//Complementary palette function
-func generateComplementaryPalette(baseColor, count int) []Color {
-	colors:= make([Color, count])
+// Complementary palette function
+func generateComplementaryPalette(baseColor Color, count int) []Color {
+	colors := make([]Color, count)
 
 	for i := 0; i < count; i++ {
 		hue := (baseColor.HSV.H + (180 * i / (count - 1))) % 360
@@ -446,10 +448,10 @@ func generateComplementaryPalette(baseColor, count int) []Color {
 	return colors
 }
 
-//Analogous palette function
+// Analogous palette function
 func generateAnalogousPalette(baseColor Color, count int) []Color {
 	colors := make([]Color, count)
-	
+
 	for i := 0; i < count; i++ {
 		hue := (baseColor.HSV.H + (60 * (i - count/2) / count)) % 360
 		if hue < 0 {
@@ -474,7 +476,7 @@ func generateAnalogousPalette(baseColor Color, count int) []Color {
 	return colors
 }
 
-//Triadic palette function
+// Triadic palette function
 func generateTriadicPalette(baseColor Color, count int) []Color {
 	colors := make([]Color, count)
 
@@ -499,13 +501,13 @@ func generateTriadicPalette(baseColor Color, count int) []Color {
 	return colors
 }
 
-//Monochromatic palette function
+// Monochromatic palette function
 func generateMonochromaticPalette(baseColor Color, count int) []Color {
-	colors := make ([]Color, count)
+	colors := make([]Color, count)
 
 	for i := 0; i < count; i++ {
-		v := 20 + (80 * i / (count-1)) //Brightness varietion from 20% to 100%
-		
+		v := 20 + (80 * i / (count - 1)) //Brightness varietion from 20% to 100%
+
 		hsv := ColorHSV{
 			H: baseColor.HSV.H,
 			S: baseColor.HSV.S,
