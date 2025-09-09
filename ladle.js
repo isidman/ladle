@@ -306,7 +306,7 @@ class ColorPicker {
 
         //Save and clear buttons
         document.getElementById('saveColorBtn').addEventListener('click', () => this.saveCurrentColor());
-        document.getElementById('clearRecentBtn'.addEventListener('click', () => this.clearRecentColors());
+        document.getElementById('clearRecentBtn').addEventListener('click', () => this.clearRecentColors());
     }
     
     handleWheelInteraction(e) {
