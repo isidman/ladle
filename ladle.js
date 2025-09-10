@@ -478,5 +478,143 @@ class ColorPicker {
         }
     }
 
+    clearRecentColors() {
+        localStorage.removeItem('recentColors');
+        this.renderRecentColors();
+        this.showNotification('Recent colors cleared!');
+    }
+
+    loadStoredColors() {
+        this.renderRecentColors();
+        this.renderSavedPalette();
+    }
     
-}
+    renderRecentColors() {
+        const recentColors = JSON.parse(localStorage.getItem('recentColors') || '[]');
+        this.recentColorsContainer.innerHTML = '';
+
+        for (let i = 0; i < this.maxRecentColors; i++) {
+            const swatch = document.createElement('div');
+            swatch.className = 'color-swatch';
+
+            if (i < recentColors.length) {
+                swatch.style.backgroundColor = recentColors[i];
+                swatch.addEventListener('click', () => this.selectColor(recentColors[i]));
+            } else {
+                swatch.classList.add('empty');
+            }
+
+            this.recentColorsContainer.appendChild(swatch);
+        }
+    }
+
+    renderSavedPalette() {
+        const savedColors = JSON.parse(localStorage.getItem('savedColors') || '[]');
+        this.savedPaletteContainer.innerHTML = '';
+
+        for (let i = 0; i < this.maxSavedColors; i++) {
+            const swatch = document.createElement('div');
+            swatch.className = 'color-swatch';
+
+            if (i < savedColors.length) {
+                swatch.style.backgroundColor = savedColors[i];
+                swatch.addEventListener('click', () => this.selectColor(savedColors[i]));
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.innerHTML = 'x';
+                removeBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.removeSavedColor(savedColor[i]);
+                });
+                swatch.appendChild(removeBtn);
+            } else {
+                swatch.classList.add('empty');
+            }
+
+            this.savedPaletteContainer.appendChild(swatch);
+        }
+    }
+
+    selectColor(hex) {
+        const rgb = this.hexToRgb(hex);
+        if (rgb) {
+            this.currentColor.hex = hex;
+            this.currentColor.rgb = rgb;
+            this.currentColor.hsv = this.rgbToHsv(rgb.r, rgb.g, rgb.b);
+            this.currentColor.hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
+            this.updateUI();
+            this.updateIndicatorPosition();
+        }
+    }
+
+    removeSavedColor(hex) {
+        let savedColors = JSON.parse(localStorage.getItem('savedColors') || '[]');
+        savedColors = savedColors.filter(color => color !== hex);
+        localStorage.setItem('savedColors', JSON.stringify(savedColors));
+        this.renderSavedPalette();  
+    }
+
+    //Clipboard functionality
+    async copyToClipboard(format) {
+        let textToCopy = '';
+
+        switch (format) {
+            case 'hex':
+                textToCopy = this.currentColor.hex;
+                break;
+            case 'rgb':
+                textToCopy = `rgb(${this.currentColor.rgb.r}, ${this.currentColor.rgb.g}, ${this.currentColor.rgb.b})`;
+                break;   
+           case 'hsl':
+                textToCopy = `hsl(${this.currentColor.hsl.h}, ${this.currentColor.hsl.s}%, ${this.currentColor.hsl.l}%)`;
+                break;
+            case 'hsv':
+                textToCopy = `hsv(${Math.round(this.currentColor.hsv.h)}, ${Math.round(this.currentColor.hsv.h)}, ${Math.round(this.currentColor.hsv.s)}%, ${Math.round(this.currentColor.hsv.v)}%)`;
+                break;
+            }
+
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                this.showNotification(`${textToCopy} copied to clipboard!`);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                //Fallback for browsers that don't support the clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    this.showNotification(`${textToCopy} copied to clipboard!`);    
+                } catch (fallbackErr) {
+                    console.error('Fallback copy failed: ', fallbackErr);
+                    this.showNotification('Failed to copy to clipboard');
+                }
+
+                document.body.removeChild(textArea);
+
+            }
+        }
+
+        showNotification(message) {
+            const notification = document.getElementById('copyNotification');
+            const text = notification.querySelector('.notification-text');
+
+            text.textContent = message;
+            notification.classList.remove('hidden');
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 250);
+            }, 2000);
+        }
+    }
+
+//Initialization of the color picker when the DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    new ColorPicker();
+});
