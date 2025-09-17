@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Ladle Color Picker</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="container">
+            <header class="header">
+                <h1>Ladle color picker</h1>
+                <p>color selection tool</p>
+            </header>
+            <div class="main-content">
+                <!--Wheel and Brightness-->
+                <div class="color-wheel-section">
+                    <div class="wheel-container">
+                        <canvas id="colorWheel" width="280" height="280"></canvas>
+                        <div class="wheel-indicator" id="wheelIndicator"></div>
+                    </div>
+                    <div class="brightness-slider-container">
+                        <input type="range"
+                                id="brightnessSlider"
+                                class="brightness-slider"
+                                min="0"
+                                max="100"
+                                value="100"
+                                orient="vertical">
+                    </div>
+                </div>
+
+                <!--Info and controls-->
+                <div class="color-info-section">
+                    <!--Previewing-->
+                    <div class="color-preview" id="colorPreview"></div>
+
+                    <!--Inputs-->
+                    <div class="color-inputs">
+                        <div class="input-groups">
+                            <label for="hexInput">HEX</label>
+                            <input type="text" id="hexInput" class="form-control" value="#ff0000">
+                            <button class="btn btn--sm copy-btn" data-copy="hex">Copy</button>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="rgbR">R</label>
+                                <input type="number" id="rgbR" class="form-control" min="0" max="255" value="255">
+                            </div>
+
+                            
+                            <div class="input-group">
+                                <label for="rgbG">G</label>
+                                <input type="number" id="rgbG" class="form-control" min="0" max="255" value="255">
+                            </div>
+
+                            <div>
+                                <label for="rgbB">B</label>
+                                <input type="number" id="rgbB" class="form-control" min="0" max="255" value="255">
+                            </div>
+                            <button class="btn btn--sm copy-btn" data-copy="rgb">Copy RGB</button>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="hslH">H</label>
+                                <input type="number" id="hslH" class="form-control" min="0" max="360" value="0">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="hslS">S</label>
+                                <input type="number" id="hslS" class="form-control" min="0" max="100" value="100">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="hslL">L</label>
+                                <input type="number" id="hslL" class="form-control" min="0" max="100" value="50">
+                            </div>
+                            <button class="btn btn--sm copy-btn" data-copy="hsl">Copy</button>
+                        </div>
+
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label for="hsvH">H</label>
+                                <input type="number" id="hsvH" class="form-control" min="0" max="360" value="0">
+                            </div>
+
+                            <div class="input-group">
+                                <label for="hsvS">S</label>
+                                <input type="number" id="hsvS" class="form-control" min="0" max="100" value="100">
+                            </div>
+
+                            <div>
+                                <label for="hsvV">V</label>
+                                <input type="number" id="hsvV" class="form-control" min="0" max="100" value="100">
+                            </div>
+                            <button class="btn btn--sm copy-btn" data-copy="hsv">Copy</button>
+                        </div>
+                    </div>
+
+                    <!--Actions-->
+                    <div class="action-buttons">
+                        <button class="btn btn--primary" id="saveColorBtn">Save to palette</button>
+                        <button class="btn btn--secondary" id="clearRecentBtn">Clear recent</button>
+                    </div>
+
+                    <!--Recent colors-->
+                    <div class="color-section">
+                        <h3>Recent Colors</h3>
+                        <div class="color-swatches" id="recentColors">
+                            <!--The recent swatches will be added dynamically-->
+                        </div>
+                    </div>
+
+                    <!--Saved palette-->
+                    <div class="color-section">
+                        <h3>Saved Palette</h3>
+                        <div class="color-swatches" id="savedPalette">
+                            <!--Saved swatches will be added dynamically-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--Copying notification-->
+        <div class="notification hidden" id="copyNotification">
+            <span class="notification-text">Color copied to clipboard!</span>
+        </div>
+
+        <script src="app.js"></script>
+    </body>
+</html>
